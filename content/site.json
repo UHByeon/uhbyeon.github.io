@@ -1,9 +1,10 @@
 {
-  "name": "uhbyeon's log_",
+  "name": "ui-hyeok's Log_",
   "author": "UHByeon",
   "display_name": "Ui-hyeok Byeon",
   "name_ko": "변의혁",
-  "description": "배우고, 만들고, 기록합니다.",
+  "description": "보안 이슈와 취약점의 원인을 분석하고, 탐지·대응 방법을 직접 구현하며 배운 내용을 기록합니다.",
+  "writer_url": "https://uihyeok-byeon.tistory.com/manage/newpost",
   "release": {
     "version": "9.14.1991",
     "channel": "stable"
@@ -67,15 +68,25 @@
     }
   ],
   "interests": [
-    "인공지능 논문",
-    "정보보안 논문",
-    "이슈와 취약점",
-    "개발 노트"
+    "인공지능",
+    "정보보안",
+    "보안 동향",
+    "보안 취약점"
   ],
-  "tech_stack": [],
+  "study_topics": [
+    "인공지능",
+    "정보보안",
+    "보안 동향",
+    "최신 취약점",
+    "최신 보안 사고",
+    "파이썬",
+    "침해사고 분석",
+    "탐지·대응"
+  ],
   "contacts": {
     "github": "https://github.com/UHByeon",
-    "twitter": "",
-    "email": ""
+    "linkedin": "",
+    "email": "bym4094@naver.com",
+    "cv": ""
   }
 }

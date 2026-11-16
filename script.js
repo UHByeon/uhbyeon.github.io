@@ -1,7 +1,7 @@
 "use strict";
 
 const sitePrefix = document.body.dataset.prefix || "./";
-const siteName = document.body.dataset.siteName || "uhbyeon's log_";
+const siteName = document.body.dataset.siteName || "ui-hyeok's Log_";
 const siteAuthor = document.body.dataset.author || "UHByeon";
 const displayName = document.body.dataset.displayName || "Ui-hyeok Byeon";
 const nameKo = document.body.dataset.nameKo || "변의혁";
@@ -134,7 +134,7 @@ document.querySelectorAll("[data-copy-target]").forEach(button => {
     try {
       await navigator.clipboard.writeText(code.textContent);
       label.textContent = originalLabel === "COPY" ? "COPIED!" : originalLabel === "[copy]" ? "[copied]" : "Copied";
-      interactionStatus.textContent = "코드를 복사했습니다.";
+      interactionStatus.textContent = button.dataset.copyTarget === "contact-email" ? "이메일 주소를 복사했습니다." : "코드를 복사했습니다.";
       window.setTimeout(() => { label.textContent = originalLabel; }, 1600);
     } catch {
       label.textContent = "Select";
@@ -183,17 +183,19 @@ if (cliForm) {
       const entry = textNode("div", "cli-entry", "");
       entry.append(textNode("p", "command", `$ ${value}`));
       if (command === "help") {
-        entry.append(textNode("p", "cli-answer", "help      Show commands\nwhoami    Profile\nposts     All logs\nprojects  Projects\nskills    Tech stack\nclear     Clear command output"));
+        entry.append(textNode("p", "cli-answer", "help             Show commands\nwhoami           Profile\nposts            All logs\nprojects         Projects\ninterests --list Study topics\ncontact --links  Contact details\nclear            Clear command output"));
       } else if (command === "whoami") {
         entry.append(textNode("p", "cli-answer", `${displayName} (${nameKo}) · @${siteAuthor}`));
       } else if (["about", "cat profile.json"].includes(command)) {
-        entry.append(textNode("p", "cli-answer", `${displayName} (${nameKo})\n${siteName}\n인공지능·정보보안 논문과 이슈, 취약점, 개발 과정에서 배운 것을 기록합니다.`));
-      } else if (["topics", "ls ./topics"].includes(command)) {
+        entry.append(textNode("p", "cli-answer", `${displayName} (${nameKo})\n${siteName}\n보안 이슈와 취약점의 원인을 분석하고, 탐지·대응 방법을 직접 구현하며 배운 내용을 기록합니다.`));
+      } else if (["topics", "categories"].includes(command)) {
         ["papers_ai", "papers_security", "issues", "vulnerabilities", "dev_notes"].forEach(key => addLink(entry, ...destinations[key]));
-      } else if (["skills", "tech-stack --visual"].includes(command)) {
-        entry.append(textNode("p", "cli-answer", document.querySelector(".tech-stack-panel")?.textContent.trim() || "0 loaded"));
+      } else if (["interests", "interests --list", "topics --list"].includes(command)) {
+        const topics = [...document.querySelectorAll(".tech-badge>span")].map(topic => topic.textContent.trim());
+        entry.append(textNode("p", "cli-answer", topics.join("\n") || "아직 등록된 관심 주제가 없습니다."));
       } else if (command === "contact --links") {
-        entry.append(textNode("p", "cli-answer", document.querySelector(".contact-tree")?.textContent.trim() || "—"));
+        const contacts = [...document.querySelectorAll(".contact-tree>div")].map(row => row.textContent.replace("[copy]", "").trim());
+        entry.append(textNode("p", "cli-answer", contacts.join("\n") || "—"));
       } else if (destinations[command]) {
         addLink(entry, ...destinations[command]);
       } else {

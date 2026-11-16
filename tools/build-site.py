@@ -1,4 +1,4 @@
-"""Generate the responsive, static uhbyeon's log_ website."""
+"""Generate the responsive, static ui-hyeok's Log_ website."""
 from pathlib import Path
 from html import escape
 from datetime import date
@@ -24,7 +24,7 @@ SITE_NAME = SITE["name"]
 DISPLAY_NAME = SITE.get("display_name", SITE["author"])
 NAME_KO = SITE.get("name_ko", "")
 RELEASE_LABEL = f'v{SITE["release"]["version"]}-{SITE["release"]["channel"]}'
-FONT_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+FONT_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
 ICONS = {
     "terminal": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',
     "home": '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
@@ -104,13 +104,14 @@ def page(title, path_label, content, active="home", nested=False, article=False,
     menu_button = f'<button class="icon-button menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="전체 메뉴 열기">{icon("menu",21)}</button>'
     sidebar_button = f'<button type="button" class="icon-button sidebar-toggle" id="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="좌측 메뉴 접기" title="좌측 메뉴 접기">{icon("panel",20)}</button>'
     search_action = f'<a class="icon-button" href="{prefix}posts.html#search-input" aria-label="기록 검색">{icon("search",20)}</a>'
+    writer_action = f'<a class="writer-link" href="{e(SITE["writer_url"])}" target="_blank" rel="noopener noreferrer" title="작성자 전용 · Tistory 글쓰기" aria-label="작성자 전용 Tistory 글쓰기">글쓰기 {icon("arrow",13)}</a>'
     if view == "article":
         back = category_url(article_post,prefix)
-        header = f'<div class="article-header-left">{sidebar_button}<a class="header-back" href="{back}">&lt; cd ..</a><span class="article-file-path">/ ~/{e(path_label.replace(" / ","/"))}</span></div><div class="header-actions"><button class="icon-button" data-bookmark aria-label="Bookmark" aria-pressed="false">{icon("bookmark",18)}</button><button class="icon-button" data-share aria-label="Share">{icon("share",18)}</button>{search_action}{menu_button}</div>'
+        header = f'<div class="article-header-left">{sidebar_button}<a class="header-back" href="{back}">&lt; cd ..</a><span class="article-file-path">/ ~/{e(path_label.replace(" / ","/"))}</span></div><div class="header-actions">{writer_action}<button class="icon-button" data-bookmark aria-label="Bookmark" aria-pressed="false">{icon("bookmark",18)}</button><button class="icon-button" data-share aria-label="Share">{icon("share",18)}</button>{search_action}{menu_button}</div>'
     else:
         context = f'<span class="header-context">/ {e(title)}</span>' if view in ("archive","profile") else ""
         status = '<span class="header-status"><i></i>ready : main</span>' if view == "default" else ""
-        header = f'<div class="header-identity">{sidebar_button}<a class="brand" href="{prefix}index.html" aria-label="{e(SITE_NAME)} 홈">{icon("terminal",24)}<span>{e(SITE_NAME.removesuffix("_"))}<span class="brand-cursor">_</span></span><span class="brand-dot" aria-hidden="true"></span></a>{context}</div><div class="header-actions">{status}{search_action}{menu_button}</div>'
+        header = f'<div class="header-identity">{sidebar_button}<a class="brand" href="{prefix}index.html" aria-label="{e(SITE_NAME)} 홈">{icon("terminal",24)}<span>{e(SITE_NAME.removesuffix("_"))}<span class="brand-cursor">_</span></span><span class="brand-dot" aria-hidden="true"></span></a>{context}</div><div class="header-actions">{status}{writer_action}{search_action}{menu_button}</div>'
     page_path = f'<div class="page-path"><span><b>~</b> / {e(path_label)}</span><span class="path-note">a personal knowledge archive</span></div>' if view == "default" else ""
     if view == "archive":
         footer = f'<footer class="reference-footer archive-footer"><span>buffer: {e(path_label)}/clean</span><span>{e(SITE_NAME)} / built with curiosity.</span></footer>'
@@ -119,9 +120,9 @@ def page(title, path_label, content, active="home", nested=False, article=False,
     elif view == "article":
         footer = f'<footer class="reference-footer article-footer"><span>{e(SITE_NAME)} / built with curiosity.</span></footer>'
     else:
-        footer = f'<footer class="page-footer home-footer"><p><span>$ echo</span> "작은 기록이 다음의 나를 만듭니다."</p><span class="footer-signature">{e(SITE_NAME)} / built with curiosity.</span></footer>'
+        footer = f'<footer class="page-footer home-footer"><p><span>$ echo</span> "잊기 전에 적어둡니다."</p><span class="footer-signature">{e(SITE_NAME)}</span></footer>'
     return f'''<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="{e(title)} — {e(SITE_NAME)}"><meta name="theme-color" content="#10141a"><title>{e(SITE_NAME)} · {e(title)}</title><link rel="icon" href="{prefix}favicon.ico?v=4" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="{prefix}favicon-32.png?v=4"><link rel="icon" type="image/svg+xml" href="{prefix}favicon.svg?v=4"><link rel="apple-touch-icon" sizes="180x180" href="{prefix}apple-touch-icon.png?v=4"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="{e(FONT_URL)}" rel="stylesheet"><link href="{prefix}styles.css?v={asset_version}" rel="stylesheet">{reference_style}<script src="{prefix}script.js?v={script_version}" defer></script></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="{e(SITE['description'])}"><meta name="theme-color" content="#10141a"><title>{e(SITE_NAME)} · {e(title)}</title><link rel="icon" href="{prefix}favicon.ico?v=4" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="{prefix}favicon-32.png?v=4"><link rel="icon" type="image/svg+xml" href="{prefix}favicon.svg?v=4"><link rel="apple-touch-icon" sizes="180x180" href="{prefix}apple-touch-icon.png?v=4"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="{e(FONT_URL)}" rel="stylesheet"><link href="{prefix}styles.css?v={asset_version}" rel="stylesheet">{reference_style}<script src="{prefix}script.js?v={script_version}" defer></script></head>
 <body class="view-{view}" data-active-section="{active}" data-prefix="{prefix}" data-site-name="{e(SITE_NAME)}" data-author="{e(SITE["author"])}" data-display-name="{e(DISPLAY_NAME)}" data-name-ko="{e(NAME_KO)}"><a class="skip-link" href="#main">본문으로 건너뛰기</a><header class="site-header">{header}</header>
 <button class="menu-backdrop" id="menu-backdrop" tabindex="-1" aria-label="전체 메뉴 닫기" hidden></button><aside class="sidebar" id="sidebar" aria-label="전체 탐색"><div class="sidebar-heading"><span>workspace</span><button class="icon-button drawer-close" aria-label="메뉴 닫기">{icon("close")}</button></div><p class="nav-command">$ log --menu</p><nav class="side-nav" aria-label="주 메뉴">{sidebar}</nav><div class="sidebar-footer"><p>// keep exploring.<br>// keep a log.</p><div class="build-status"><span class="build-indicator" aria-hidden="true"></span><span>{e(RELEASE_LABEL)}</span></div></div></aside>
 <div class="workspace"><main id="main" class="page-shell">{page_path}{content}{footer}</main></div><nav class="bottom-nav" aria-label="모바일 주 메뉴">{bottom}</nav><p id="interaction-status" class="sr-only" role="status" aria-live="polite"></p></body></html>'''
@@ -144,9 +145,9 @@ def home():
     posts = ordered_posts(POSTS)
     recent = posts[:4]
     recent_html = rows(recent) if recent else '<p class="recent-empty">아직 게시된 글이 없습니다.</p>'
-    hero_code = "// a little progress, every day.\nconst day = {\n  build: 'something',\n  learn: 'one thing',\n  write: 'it down'\n};\nkeepGoing(day);"
-    pinned = f'<a class="pinned-note" href="./about.html"><div class="pin-eyebrow">{icon("bookmark",15)} 처음 오셨다면 · 추천 글 {icon("arrow",15)}</div><h2>안녕하세요, {e(NAME_KO)}입니다.</h2><p>인공지능과 정보보안을 공부하며 읽고, 만들고, 정리한 내용을 남깁니다.</p><footer><span>about_me.md</span><span>open profile →</span></footer></a>'
-    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>생각을 코드로,<br>경험을 <span>기록으로.</span></h1><p class="hero-description">문제를 풀고, 작은 도구를 만들고, 배운 것을 남깁니다.<br>계속 업데이트되는 개발자의 작업 노트.</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(posts)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"daily-log.ts","daily-code","TS",False)}<p>└ 오늘의 배움을 한 줄씩.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(posts):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{recent_html}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>개발 노트</h2><p>배운 것과 해결한 문제를 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./papers-ai.html">{icon("brain",24)}<div><h2>인공지능 논문</h2><p>읽고 이해한 내용을 차곡차곡.</p></div>{icon("arrow",16)}</a></div>'''
+    hero_code = "# study log\n\n- 읽은 자료와 출처\n- 이해한 내용\n- 직접 확인한 결과\n- 남은 질문\n- 다음에 살펴볼 것"
+    pinned = f'<a class="pinned-note" href="./about.html"><div class="pin-eyebrow">{icon("bookmark",15)} 처음 오셨다면 · about_me {icon("arrow",15)}</div><h2>안녕하세요, {e(NAME_KO)}입니다.</h2><p>이 블로그에서 다루는 내용과 글을 정리하는 방식을 소개합니다.</p><footer><span>about_me.md</span><span>open profile →</span></footer></a>'
+    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>분석하고, 구현하고,<br><span>대응합니다.</span></h1><p class="hero-description">{e(SITE["description"])}</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(posts)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"study-log.md","daily-code","MD",False)}<p>└ 다음에 다시 찾아볼 공부 메모.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(posts):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{recent_html}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>실습 노트</h2><p>직접 해본 과정과 막혔던 부분을 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./papers-ai.html">{icon("brain",24)}<div><h2>인공지능 논문</h2><p>논문의 방법과 결과를 살펴보고, 이해한 내용을 적습니다.</p></div>{icon("arrow",16)}</a></div>'''
 
 
 FILTERS = [("all", "All"), *[(key, NAV_BY_KEY[key]["label"]) for key in LOG_KEYS]]
@@ -190,8 +191,10 @@ def archive(key="all", legacy_category=None):
     intro={"all":"전체 기록","ai":"읽고 이해한 인공지능 논문","security":"정보보안 논문을 읽으며","issues":"살펴본 기술과 보안 이슈","vulnerabilities":"취약점의 원인과 대응","development":"개발하면서 적은 메모"}[key]
     desc={"all":"논문을 읽고 정리한 내용부터 보안 이슈와 개발 메모까지, 모든 글을 모았습니다.","ai":"논문이 다루는 문제와 접근 방법, 읽으면서 궁금했던 점을 정리합니다.","security":"위협을 분석하는 방법과 논문에서 제안한 대응을 살펴봅니다.","issues":"관심 있게 본 소식과 그 배경을 정리합니다.","vulnerabilities":"취약점이 발생하는 조건과 원인, 대응 방법을 정리합니다.","development":"구현하다 막힌 부분과 해결 과정, 다시 찾아볼 내용을 남깁니다."}[key]
     cards="".join(archive_card(p) for p in selected)
-    empty='<div class="empty-library"><p class="command">$ ls ./records</p><h2>아직 기록이 없습니다.</h2><p>첫 번째 기록을 이곳에 차곡차곡 남길 예정입니다.</p></div>' if not selected else ""
-    return f'<div class="archive-topline"><span><b>~/{e(item["label"])}</b><small>⑂ [branch: main ▾]</small></span>{search_box()}</div><header class="page-intro"><p class="reference-command"><b>$</b><span>grep -r "tip" ./{e(item["label"])}</span><i class="prompt-cursor" aria-hidden="true"></i></p><h1>{e(intro)}</h1><p>{e(desc)}</p></header>{filters(selected) if key == "all" and not legacy_category else ""}<span id="post-count" class="sr-only">{len(selected)}</span><div class="archive-cards">{cards}</div>{empty}<p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p class="sr-only" id="search-status" role="status" aria-live="polite"></p>'
+    search_term={"all":".","ai":"AI","security":"security","issues":"incident","vulnerabilities":"CVE","development":"practice"}[key]
+    archive_command=e(f'grep -r "{search_term}" ./{item["label"]}')
+    empty=f'<div class="empty-library"><p class="command">$ {archive_command}</p><h2>아직 기록이 없습니다.</h2><p>첫 번째 기록을 이곳에 차곡차곡 남길 예정입니다.</p></div>' if not selected else ""
+    return f'<div class="archive-topline"><span><b>~/{e(item["label"])}</b><small>⑂ [branch: main ▾]</small></span>{search_box()}</div><header class="page-intro"><p class="reference-command"><b>$</b><span>{archive_command}</span><i class="prompt-cursor" aria-hidden="true"></i></p><h1>{e(intro)}</h1><p>{e(desc)}</p></header>{filters(selected) if key == "all" and not legacy_category else ""}<span id="post-count" class="sr-only">{len(selected)}</span><div class="archive-cards">{cards}</div>{empty}<p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p class="sr-only" id="search-status" role="status" aria-live="polite"></p>'
 
 
 def profile_json_html(profile):
@@ -210,20 +213,21 @@ def profile_json_html(profile):
 
 
 def about():
-    profile={"name":DISPLAY_NAME,"name_ko":NAME_KO,"github":SITE["author"],"space":SITE_NAME,"interests":SITE["interests"],"note":"작은 기록이 다음의 나를 만듭니다."}
-    technologies=SITE.get("tech_stack",[])
-    stack="".join(f'<div class="tech-badge"><i></i><span>{e(t["name"])}</span><small>{e(t.get("version",""))}</small></div>' for t in technologies)
+    profile={"name":DISPLAY_NAME,"name_ko":NAME_KO,"github":SITE["author"],"space":SITE_NAME,"interests":SITE["interests"],"note":"더 하려고 해도 더 할 게 없는, 마지막의 마지막까지 다하는 것"}
+    topics=SITE.get("study_topics",[])
+    stack="".join(f'<div class="tech-badge"><i></i><span>{e(topic)}</span></div>' for topic in topics)
     contact=SITE.get("contacts",{})
     rows=[]
-    for key,label in (("github","GitHub"),("twitter","Twitter"),("email","Email")):
+    for key,label in (("github","GitHub"),("linkedin","LinkedIn"),("email","Email"),("cv","CV")):
         value=contact.get(key,"")
-        value_html=e(value) if value else "—"
-        if value and key in ("github","twitter") and value.startswith("https://"):
+        value_html=e(value) if value else '<span class="contact-pending" aria-disabled="true">준비 중</span>'
+        if value and key in ("github","linkedin","cv") and value.startswith("https://"):
             value_html=f'<a href="{e(value)}">{e(value.removeprefix("https://"))} ↗</a>'
         if key == "email":
-            value_html=f'<span id="contact-email">{value_html}</span><button class="email-copy" data-copy-target="contact-email"'+('' if value else ' disabled')+'><span>[copy]</span></button>'
-        rows.append(f'<div><span class="tree-branch">{"└──" if key == "email" else "├──"}</span><span>{label}:</span>{value_html}</div>')
-    return f'''<header class="profile-intro"><div class="profile-path"><span><b>~</b> / profile / <em>interactive_cli</em></span><small>bash</small></div><div><h1>터미널 프로필 <span>&amp; CLI</span></h1><small class="interactive-badge">{icon("terminal",12)} interactive</small></div></header><section class="profile-terminal" aria-label="블로그 소개 터미널"><div class="code-bar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>zsh — 80x24</span><span>UTF-8</span></div><div class="terminal-screen" id="cli-output" role="log" aria-label="명령 실행 결과"><div class="cli-welcome"><strong>{e(SITE_NAME)}</strong><p>Type <b>[help]</b> or click quick suggestions below to run commands.</p></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> whoami</p><p class="cli-answer">{e(DISPLAY_NAME)} ({e(NAME_KO)}) · @{e(SITE["author"])}</p></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> cat profile.json</p><pre class="profile-json">{profile_json_html(profile)}</pre></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> tech-stack --visual</p><div class="tech-stack-panel"><div><span>// core technologies &amp; toolchains</span><span>{len(technologies)} loaded</span></div><div class="tech-badges">{stack}</div></div></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> contact --links</p><div class="contact-tree">{"".join(rows)}</div></div><div id="cli-dynamic-output"></div><div class="active-prompt"><b>$</b><span id="terminal-input-display"></span><i class="prompt-cursor" aria-hidden="true"></i></div></div><div class="cli-controls"><div class="quick-commands"><button data-command="help">[help]</button><button data-command="posts">[posts]</button><button data-command="projects">[projects]</button><button data-command="skills">[skills]</button><button data-command="clear">[clear]</button></div><form id="cli-form" class="cli-form"><span aria-hidden="true">$</span><label class="sr-only" for="cli-input">블로그 탐색 명령 입력</label><input id="cli-input" type="text" placeholder="Type 'help' or command..." autocomplete="off" autocapitalize="off" spellcheck="false"><button type="submit">RUN ↵</button></form></div></section><div class="cli-status">// status: ready for input</div>'''
+            email_text=f'<a id="contact-email" href="mailto:{e(value)}">{e(value)}</a>' if value else value_html
+            value_html=f'{email_text}<button class="email-copy" data-copy-target="contact-email" aria-label="이메일 주소 복사"'+('' if value else ' disabled')+'><span>[copy]</span></button>'
+        rows.append(f'<div><span class="tree-branch">{"└──" if key == "cv" else "├──"}</span><span>{label}:</span>{value_html}</div>')
+    return f'''<header class="profile-intro"><div class="profile-path"><span><b>~</b> / profile / <em>interactive_cli</em></span><small>bash</small></div><div><h1>터미널 프로필 <span>&amp; CLI</span></h1><small class="interactive-badge">{icon("terminal",12)} interactive</small></div></header><section class="profile-terminal" aria-label="블로그 소개 터미널"><div class="code-bar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>zsh — 80x24</span><span>UTF-8</span></div><div class="terminal-screen" id="cli-output" role="log" aria-label="명령 실행 결과"><div class="cli-welcome"><strong>{e(SITE_NAME)}</strong><p>Type <b>[help]</b> or click quick suggestions below to run commands.</p></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> whoami</p><p class="cli-answer">{e(DISPLAY_NAME)} ({e(NAME_KO)}) · @{e(SITE["author"])}</p></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> cat profile.json</p><pre class="profile-json">{profile_json_html(profile)}</pre></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> interests --list</p><div class="tech-stack-panel"><div><span>// topics I am studying</span><span>{len(topics)} topics</span></div><div class="tech-badges">{stack}</div></div></div><div class="cli-entry"><p class="cli-prompt"><b>$</b> contact --links</p><div class="contact-tree">{"".join(rows)}</div></div><div id="cli-dynamic-output"></div><div class="active-prompt"><b>$</b><span id="terminal-input-display"></span><i class="prompt-cursor" aria-hidden="true"></i></div></div><div class="cli-controls"><div class="quick-commands"><button data-command="help">[help]</button><button data-command="posts">[posts]</button><button data-command="projects">[projects]</button><button data-command="interests --list">[interests]</button><button data-command="clear">[clear]</button></div><form id="cli-form" class="cli-form"><span aria-hidden="true">$</span><label class="sr-only" for="cli-input">블로그 탐색 명령 입력</label><input id="cli-input" type="text" placeholder="Type 'help' or command..." autocomplete="off" autocapitalize="off" spellcheck="false"><button type="submit">RUN ↵</button></form></div></section><div class="cli-status">// status: ready for input</div>'''
 
 
 def article(post,index):

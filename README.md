@@ -1,8 +1,8 @@
-# uhbyeon's log_
+# ui-hyeok's Log_
 
 변의혁(Ui-hyeok Byeon)의 개인 블로그입니다.
 
-인공지능과 정보보안을 공부하며 읽은 논문, 살펴본 이슈, 개발 중에 배운 내용을 적습니다. 시간이 지나 다시 읽었을 때도 이해할 수 있도록, 문제의 배경과 해결 과정을 함께 남기려 합니다.
+보안 이슈와 취약점의 원인을 분석하고, 탐지·대응 방법을 직접 구현하며 배운 내용을 기록합니다. 인공지능과 정보보안 논문을 읽고, 직접 확인한 결과와 남은 질문을 함께 남깁니다.
 
 **[블로그 바로가기 → uhbyeon.github.io](https://uhbyeon.github.io/)**
 
@@ -17,7 +17,7 @@
 | ↳ [issues](https://uhbyeon.github.io/issues.html) | 관심 있게 살펴본 기술·보안 소식과 그 배경 |
 | ↳ [vulnerabilities](https://uhbyeon.github.io/vulnerabilities.html) | 취약점이 생기는 조건과 원인, 대응 방법 |
 | ↳ [dev_notes](https://uhbyeon.github.io/development.html) | 구현 과정에서 막힌 부분, 해결 방법과 다시 찾아볼 메모 |
-| [about_me](https://uhbyeon.github.io/about.html) | 작성자 소개와 GitHub 링크 |
+| [about_me](https://uhbyeon.github.io/about.html) | 작성자 소개, 관심 주제와 연락처 |
 
 `all_logs`에서는 모든 글을 함께 읽거나 다섯 분류 중 원하는 항목만 골라 볼 수 있습니다. 홈의 최근 기록도 같은 게시글을 최신순으로 보여 줍니다.
 
