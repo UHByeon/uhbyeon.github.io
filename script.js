@@ -1,6 +1,10 @@
 "use strict";
 
 const sitePrefix = document.body.dataset.prefix || "./";
+const siteName = document.body.dataset.siteName || "uhbyeon's log_";
+const siteAuthor = document.body.dataset.author || "UHByeon";
+const displayName = document.body.dataset.displayName || "Ui-hyeok Byeon";
+const nameKo = document.body.dataset.nameKo || "변의혁";
 const sidebar = document.querySelector("#sidebar");
 const menuToggle = document.querySelector("#menu-toggle");
 const backdrop = document.querySelector("#menu-backdrop");
@@ -136,9 +140,9 @@ if (cliForm) {
       if (command === "help") {
         entry.append(textNode("p", "cli-answer", "help      Show commands\nwhoami    Profile\nposts     All logs\nprojects  Projects\nskills    Tech stack\nclear     Clear command output"));
       } else if (command === "whoami") {
-        entry.append(textNode("p", "cli-answer", "uhbyeon — 배우고, 만들고, 기록합니다."));
+        entry.append(textNode("p", "cli-answer", `${displayName} (${nameKo}) · @${siteAuthor}`));
       } else if (["about", "cat profile.json"].includes(command)) {
-        entry.append(textNode("p", "cli-answer", "uhbyeon's log_\n인공지능·정보보안 논문과 이슈, 취약점, 개발 과정에서 배운 것을 기록합니다."));
+        entry.append(textNode("p", "cli-answer", `${displayName} (${nameKo})\n${siteName}\n인공지능·정보보안 논문과 이슈, 취약점, 개발 과정에서 배운 것을 기록합니다.`));
       } else if (["topics", "ls ./topics"].includes(command)) {
         ["papers_ai", "papers_security", "issues", "vulnerabilities", "dev_notes"].forEach(key => addLink(entry, ...destinations[key]));
       } else if (["skills", "tech-stack --visual"].includes(command)) {

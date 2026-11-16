@@ -1,6 +1,8 @@
 {
   "name": "uhbyeon's log_",
-  "author": "uhbyeon",
+  "author": "UHByeon",
+  "display_name": "Ui-hyeok Byeon",
+  "name_ko": "변의혁",
   "description": "배우고, 만들고, 기록합니다.",
   "navigation": [
     {
@@ -68,7 +70,7 @@
   ],
   "tech_stack": [],
   "contacts": {
-    "github": "",
+    "github": "https://github.com/UHByeon",
     "twitter": "",
     "email": ""
   }

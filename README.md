@@ -1,5 +1,7 @@
 # uhbyeon's log_
 
+작성자: **Ui-hyeok Byeon (변의혁)** · GitHub: [UHByeon](https://github.com/UHByeon)
+
 GitHub Pages용 한국어 정적 블로그입니다. 사용자가 제공한 Stitch 화면을 바탕으로 홈, 글 목록, 소개 터미널, 게시글과 커밋 목록형 추가 페이지를 구성했습니다. 모든 메뉴와 글에는 독립 HTML 주소가 있습니다.
 
 데스크톱과 태블릿에서는 상단 헤더와 좌측 메뉴를, 768px 미만에서는 상단 헤더와 하단 탐색 메뉴를 사용합니다. 모바일 우측 상단 메뉴 버튼에서 논문·이슈·취약점 등 전체 메뉴를 열 수 있습니다.
@@ -52,7 +54,7 @@ python tools/export-terminal-concept.py
 
 소개 터미널의 빠른 명령은 원본의 `[help]`, `[posts]`, `[projects]`, `[skills]`, `[clear]`입니다. 이전 탐색 명령도 유지합니다. `clear`는 실행 결과를 비우며 기본 프로필을 지우지 않습니다. 실제 운영체제 명령은 실행하지 않습니다. 검색과 분류 필터는 함께 적용되며, `all_logs`의 필터는 현재 글에 있는 분류와 실제 개수로 생성됩니다.
 
-`content/site.json`의 `tech_stack`과 `contacts`를 채우면 원본의 기술 스택·연락처 영역에 표시됩니다. 현재 값은 비어 있으며 참고 화면의 가상 경력·기술 버전·연락처·통계 수치는 복제하지 않았습니다.
+`content/site.json`의 `tech_stack`과 `contacts`를 채우면 원본의 기술 스택·연락처 영역에 표시됩니다. GitHub 연락처에는 본인 계정을 연결했고 기술 스택과 다른 연락처는 비어 있으며 참고 화면의 가상 경력·기술 버전·연락처·통계 수치는 복제하지 않았습니다.
 
 ## 브라우저 탭 아이콘
 
@@ -70,8 +72,8 @@ python tools/export-terminal-concept.py
 
 ## 게시와 업데이트
 
-- 블로그: <https://byeonui-hyeok.github.io/>
-- 저장소: <https://github.com/ByeonUi-Hyeok/ByeonUi-Hyeok.github.io>
+- 블로그: <https://uhbyeon.github.io/>
+- 저장소: <https://github.com/UHByeon/uhbyeon.github.io>
 - GitHub Pages 게시 소스: `main` 브랜치의 `/ (root)`
 
 글을 수정한 뒤 `python tools/build-site.py`로 HTML을 재생성하고 변경 사항을 `main`에 커밋·푸시하면 GitHub Pages가 자동으로 다시 게시합니다. 아이콘을 수정했을 때만 먼저 `python tools/build-icons.py`를 실행합니다.
