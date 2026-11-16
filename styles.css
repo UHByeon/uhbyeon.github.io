@@ -18,3 +18,29 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}.brand-dot{animation:none;opacity:1}}
 
 .header-identity{display:flex;align-items:center;gap:12px;min-width:0}.header-identity>.brand{flex:none}.header-actions{flex:none}
+
+/* The four reading categories belong to all_logs. */
+.nav-group{min-width:0}
+.nav-group-row{display:flex;align-items:stretch;border-left:2px solid transparent}
+.nav-group-row.is-active{border-color:var(--green);background:#1b2d25}
+.nav-group-row>.nav-item{flex:1;min-width:0;border-left:0;padding-left:3px}
+.nav-group-row>.nav-item.is-active{background:transparent}
+.nav-group-toggle{display:inline-flex;align-items:center;justify-content:center;flex:none;width:22px;padding:0;border:0;background:transparent;color:var(--muted)}
+.nav-group-toggle:hover{color:var(--green);background:#1e2829}
+.nav-group-toggle svg{transition:transform .16s}
+.nav-group-toggle[aria-expanded="true"] svg{transform:rotate(90deg)}
+.side-subnav{display:flex;flex-direction:column;gap:3px;margin:4px 0 6px 23px;padding-left:7px;border-left:1px solid var(--line)}
+.side-subnav>.nav-item{font-size:10px;padding-inline:8px;gap:7px}
+.side-subnav>.nav-item>svg{width:14px;height:14px}
+.side-subnav .nav-count{font-size:8px}
+.sidebar-toggle{flex:none}
+.sidebar-collapsed .sidebar-toggle svg{transform:rotate(180deg)}
+@media(min-width:768px){
+  .sidebar-collapsed .sidebar{visibility:hidden;transform:translateX(-100%);pointer-events:none}
+  .sidebar-collapsed .workspace{margin-left:0}
+}
+@media(max-width:767px){
+  .sidebar-toggle{display:none}
+  .side-subnav>.nav-item{font-size:11px;min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){.nav-group-toggle svg{transition:none}}

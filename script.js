@@ -6,10 +6,27 @@ const siteAuthor = document.body.dataset.author || "UHByeon";
 const displayName = document.body.dataset.displayName || "Ui-hyeok Byeon";
 const nameKo = document.body.dataset.nameKo || "변의혁";
 const sidebar = document.querySelector("#sidebar");
+const sidebarToggle = document.querySelector("#sidebar-toggle");
 const menuToggle = document.querySelector("#menu-toggle");
 const backdrop = document.querySelector("#menu-backdrop");
 const mobileQuery = window.matchMedia("(max-width: 767px)");
 let previousMenuFocus = null;
+function readPreference(key) {
+  try { return localStorage.getItem(`uhbyeon:${key}`); } catch { return null; }
+}
+function savePreference(key, value) {
+  try { localStorage.setItem(`uhbyeon:${key}`, String(value)); } catch { /* Navigation also works without storage. */ }
+}
+let sidebarCollapsed = readPreference("sidebar-collapsed") === "true";
+function syncSidebar() {
+  const collapsed = !mobileQuery.matches && sidebarCollapsed;
+  document.body.classList.toggle("sidebar-collapsed", collapsed);
+  sidebar.inert = mobileQuery.matches ? !document.body.classList.contains("menu-open") : collapsed;
+  sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+  const label = collapsed ? "좌측 메뉴 펼치기" : "좌측 메뉴 접기";
+  sidebarToggle.setAttribute("aria-label", label);
+  sidebarToggle.setAttribute("title", label);
+}
 
 function setMenu(open, restoreFocus = true) {
   const isOpen = open && mobileQuery.matches;
@@ -18,7 +35,7 @@ function setMenu(open, restoreFocus = true) {
   menuToggle.setAttribute("aria-expanded", String(isOpen));
   menuToggle.setAttribute("aria-label", isOpen ? "전체 메뉴 닫기" : "전체 메뉴 열기");
   backdrop.hidden = !isOpen;
-  sidebar.inert = mobileQuery.matches && !isOpen;
+  syncSidebar();
   document.querySelector(".workspace").inert = isOpen;
   document.querySelector(".bottom-nav").inert = isOpen;
   if (isOpen) window.requestAnimationFrame(() => {
@@ -28,10 +45,34 @@ function setMenu(open, restoreFocus = true) {
 }
 
 menuToggle.addEventListener("click", () => setMenu(!document.body.classList.contains("menu-open")));
+sidebarToggle.addEventListener("click", () => {
+  sidebarCollapsed = !sidebarCollapsed;
+  savePreference("sidebar-collapsed", sidebarCollapsed);
+  syncSidebar();
+});
 backdrop.addEventListener("click", () => setMenu(false));
 document.querySelector(".drawer-close").addEventListener("click", () => setMenu(false));
 mobileQuery.addEventListener("change", () => setMenu(false, false));
 setMenu(false, false);
+const logGroupToggle = document.querySelector("#log-group-toggle");
+const logCategories = document.querySelector("#log-categories");
+const allLogsLink = document.querySelector("[data-all-logs-link]");
+function setLogGroup(open) {
+  logGroupToggle.setAttribute("aria-expanded", String(open));
+  logGroupToggle.setAttribute("aria-label", open ? "all_logs 분류 접기" : "all_logs 분류 펼치기");
+  allLogsLink.setAttribute("aria-expanded", String(open));
+  logCategories.hidden = !open;
+  savePreference("log-group-open", open);
+}
+setLogGroup(logCategories.dataset.hasActive === "true" || readPreference("log-group-open") !== "false");
+logGroupToggle.addEventListener("click", () => setLogGroup(logGroupToggle.getAttribute("aria-expanded") !== "true"));
+allLogsLink.addEventListener("click", event => {
+  if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  if (document.body.dataset.activeSection === "all") {
+    event.preventDefault();
+    setLogGroup(logGroupToggle.getAttribute("aria-expanded") !== "true");
+  } else setLogGroup(true);
+});
 document.addEventListener("keydown", event => {
   if (!document.body.classList.contains("menu-open")) return;
   if (event.key === "Escape") { event.preventDefault(); setMenu(false); }
@@ -62,9 +103,13 @@ function filterPosts() {
   const counter = document.querySelector("#post-count");
   if (counter) counter.textContent = count;
   const empty = document.querySelector("#search-empty");
-  if (empty) empty.hidden = count > 0 || (postCards.length === 0 && !query && activeFilter === "all");
+  const showLibrary = postCards.length === 0 && !query && activeFilter === "all";
+  if (empty) {
+    empty.hidden = count > 0 || showLibrary;
+    empty.textContent = query ? "일치하는 기록이 없습니다." : "이 분류에는 아직 기록이 없습니다.";
+  }
   const library = document.querySelector(".empty-library");
-  if (library) library.hidden = Boolean(query);
+  if (library) library.hidden = !showLibrary;
   const status = document.querySelector("#search-status");
   if (status) status.textContent = `${count}개의 기록을 찾았습니다.`;
 }
