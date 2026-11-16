@@ -1,0 +1,75 @@
+{
+  "name": "uhbyeon's log_",
+  "author": "uhbyeon",
+  "description": "배우고, 만들고, 기록합니다.",
+  "navigation": [
+    {
+      "key": "home",
+      "path": "index.html",
+      "label": "~/workspace",
+      "description": "홈",
+      "icon": "home"
+    },
+    {
+      "key": "all",
+      "path": "posts.html",
+      "label": "all_logs",
+      "description": "모두 보기",
+      "icon": "archive"
+    },
+    {
+      "key": "ai",
+      "path": "papers-ai.html",
+      "label": "papers_AI",
+      "description": "인공지능 논문",
+      "icon": "brain"
+    },
+    {
+      "key": "security",
+      "path": "papers-security.html",
+      "label": "papers_security",
+      "description": "정보보안 논문",
+      "icon": "shield"
+    },
+    {
+      "key": "issues",
+      "path": "issues.html",
+      "label": "issues",
+      "description": "이슈",
+      "icon": "activity"
+    },
+    {
+      "key": "vulnerabilities",
+      "path": "vulnerabilities.html",
+      "label": "vulnerabilities",
+      "description": "취약점",
+      "icon": "bug"
+    },
+    {
+      "key": "development",
+      "path": "development.html",
+      "label": "dev_notes",
+      "description": "개발 노트",
+      "icon": "code"
+    },
+    {
+      "key": "about",
+      "path": "about.html",
+      "label": "about_me",
+      "description": "소개",
+      "icon": "user"
+    }
+  ],
+  "interests": [
+    "인공지능 논문",
+    "정보보안 논문",
+    "이슈와 취약점",
+    "개발 노트"
+  ],
+  "tech_stack": [],
+  "contacts": {
+    "github": "",
+    "twitter": "",
+    "email": ""
+  }
+}

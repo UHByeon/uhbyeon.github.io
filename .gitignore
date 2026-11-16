@@ -1,0 +1,18 @@
+# Local previews and design history
+/output/
+/designs/
+/tools/build-design-previews.py
+/tools/export-terminal-concept.py
+
+# Python and local editor state
+__pycache__/
+*.py[cod]
+.venv/
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Local environment files
+.env
+.env.*
