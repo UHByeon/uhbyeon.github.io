@@ -3,7 +3,7 @@
   "author": "UHByeon",
   "display_name": "Ui-hyeok Byeon",
   "name_ko": "변의혁",
-  "description": "보안 이슈와 취약점의 원인을 분석하고, 탐지·대응 방법을 직접 구현하며 배운 내용을 기록합니다.",
+  "description": "보안 이슈와 취약점의 원인을 분석하고, 잘!하고 싶은 인간의 작업 노트.",
   "writer_url": "https://uihyeok-byeon.tistory.com/manage/newpost",
   "release": {
     "version": "9.14.1991",
@@ -68,10 +68,10 @@
     }
   ],
   "interests": [
-    "인공지능",
-    "정보보안",
-    "보안 동향",
-    "보안 취약점"
+    "Artificial Intelligence",
+    "Information Security",
+    "Security Trends",
+    "Security Vulnerabilities"
   ],
   "study_topics": [
     "인공지능",
@@ -88,5 +88,12 @@
     "linkedin": "",
     "email": "bym4094@naver.com",
     "cv": ""
-  }
+  },
+  "home_description_lines": [
+    "보안 이슈와 취약점의 원인을 분석하고,",
+    "잘!하고 싶은 인간의 작업 노트."
+  ],
+  "role": "Cert/IR",
+  "location": "Busan, KR",
+  "note": "Doing everything until the very end, with nothing left to do even if I wanted to do more"
 }

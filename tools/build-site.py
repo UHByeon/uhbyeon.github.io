@@ -143,11 +143,11 @@ def rows(posts, prefix="./"):
 
 def home():
     posts = ordered_posts(POSTS)
-    recent = posts[:4]
+    recent = posts[:3]
     recent_html = rows(recent) if recent else '<p class="recent-empty">아직 게시된 글이 없습니다.</p>'
-    hero_code = "# study log\n\n- 읽은 자료와 출처\n- 이해한 내용\n- 직접 확인한 결과\n- 남은 질문\n- 다음에 살펴볼 것"
-    pinned = f'<a class="pinned-note" href="./about.html"><div class="pin-eyebrow">{icon("bookmark",15)} 처음 오셨다면 · about_me {icon("arrow",15)}</div><h2>안녕하세요, {e(NAME_KO)}입니다.</h2><p>이 블로그에서 다루는 내용과 글을 정리하는 방식을 소개합니다.</p><footer><span>about_me.md</span><span>open profile →</span></footer></a>'
-    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>분석하고, 구현하고,<br><span>대응합니다.</span></h1><p class="hero-description">{e(SITE["description"])}</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(posts)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"study-log.md","daily-code","MD",False)}<p>└ 다음에 다시 찾아볼 공부 메모.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(posts):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{recent_html}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>실습 노트</h2><p>직접 해본 과정과 막혔던 부분을 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./papers-ai.html">{icon("brain",24)}<div><h2>인공지능 논문</h2><p>논문의 방법과 결과를 살펴보고, 이해한 내용을 적습니다.</p></div>{icon("arrow",16)}</a></div>'''
+    hero_code = "// a little progress, every day.\nconst day = {\n  build: 'something',\n  learn: 'one thing',\n  write: 'it down'\n};\nkeepGoing(day);"
+    pinned = f'<a class="pinned-note" href="./about.html"><div class="pin-eyebrow">{icon("bookmark",15)} Introduce {icon("arrow",15)}</div><h2>마지막의 마지막까지 다하는 최선</h2><p>더 하려고 해도 더 할 게 없는, 마지막의 마지막까지 다하는 최선.<br>작은 단서도 그냥 넘기지 않고, 납득할 때까지 확인하려 합니다. 배운 것을 직접 구현하며 더 나은 대응을 고민하는 변의혁입니다.</p><footer><span>about_me.md</span><span>open profile →</span></footer></a>'
+    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>분석, 대응하고,<br><span>구현합니다.</span></h1><p class="hero-description">{"<br>".join(e(line) for line in SITE["home_description_lines"])}</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(posts)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"study-log.md","daily-code","TS",False)}<p>└ 다음에 다시 찾아볼 공부 메모.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(recent):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{recent_html}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>실습 노트</h2><p>직접 해본 과정과 막혔던 부분을 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./vulnerabilities.html">{icon("bug",24)}<div><h2>취약점</h2><p>취약점을 분석하고, 구현하고 대응합니다.</p></div>{icon("arrow",16)}</a></div>'''
 
 
 FILTERS = [("all", "All"), *[(key, NAV_BY_KEY[key]["label"]) for key in LOG_KEYS]]
@@ -191,8 +191,8 @@ def archive(key="all", legacy_category=None):
     intro={"all":"전체 기록","ai":"읽고 이해한 인공지능 논문","security":"정보보안 논문을 읽으며","issues":"살펴본 기술과 보안 이슈","vulnerabilities":"취약점의 원인과 대응","development":"개발하면서 적은 메모"}[key]
     desc={"all":"논문을 읽고 정리한 내용부터 보안 이슈와 개발 메모까지, 모든 글을 모았습니다.","ai":"논문이 다루는 문제와 접근 방법, 읽으면서 궁금했던 점을 정리합니다.","security":"위협을 분석하는 방법과 논문에서 제안한 대응을 살펴봅니다.","issues":"관심 있게 본 소식과 그 배경을 정리합니다.","vulnerabilities":"취약점이 발생하는 조건과 원인, 대응 방법을 정리합니다.","development":"구현하다 막힌 부분과 해결 과정, 다시 찾아볼 내용을 남깁니다."}[key]
     cards="".join(archive_card(p) for p in selected)
-    search_term={"all":".","ai":"AI","security":"security","issues":"incident","vulnerabilities":"CVE","development":"practice"}[key]
-    archive_command=e(f'grep -r "{search_term}" ./{item["label"]}')
+    search_term={"all":".","ai":"Papers_AI","security":"Papers_Security","issues":"Incident","vulnerabilities":"vulnerabilities","development":"practice"}[key]
+    archive_command=e(f'grep -r "{search_term}" ./all_logs')
     empty=f'<div class="empty-library"><p class="command">$ {archive_command}</p><h2>아직 기록이 없습니다.</h2><p>첫 번째 기록을 이곳에 차곡차곡 남길 예정입니다.</p></div>' if not selected else ""
     return f'<div class="archive-topline"><span><b>~/{e(item["label"])}</b><small>⑂ [branch: main ▾]</small></span>{search_box()}</div><header class="page-intro"><p class="reference-command"><b>$</b><span>{archive_command}</span><i class="prompt-cursor" aria-hidden="true"></i></p><h1>{e(intro)}</h1><p>{e(desc)}</p></header>{filters(selected) if key == "all" and not legacy_category else ""}<span id="post-count" class="sr-only">{len(selected)}</span><div class="archive-cards">{cards}</div>{empty}<p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p class="sr-only" id="search-status" role="status" aria-live="polite"></p>'
 
@@ -213,7 +213,7 @@ def profile_json_html(profile):
 
 
 def about():
-    profile={"name":DISPLAY_NAME,"name_ko":NAME_KO,"github":SITE["author"],"space":SITE_NAME,"interests":SITE["interests"],"note":"더 하려고 해도 더 할 게 없는, 마지막의 마지막까지 다하는 것"}
+    profile={"name":DISPLAY_NAME,"name_ko":NAME_KO,"role":SITE["role"],"location":SITE["location"],"interests":SITE["interests"],"note":SITE["note"]}
     topics=SITE.get("study_topics",[])
     stack="".join(f'<div class="tech-badge"><i></i><span>{e(topic)}</span></div>' for topic in topics)
     contact=SITE.get("contacts",{})
