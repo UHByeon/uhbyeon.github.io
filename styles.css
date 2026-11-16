@@ -44,3 +44,21 @@
   .side-subnav>.nav-item{font-size:11px;min-height:40px}
 }
 @media(prefers-reduced-motion:reduce){.nav-group-toggle svg{transition:none}}
+
+/* Keep the reference status at the bottom while the longer menu scrolls. */
+.sidebar{overflow:hidden}
+.sidebar-heading,.nav-command{flex-shrink:0}
+.side-nav{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.side-nav>.nav-item,.side-nav>.nav-group{flex-shrink:0}
+.sidebar-footer{flex:none;margin-top:16px;padding:24px 8px 0;border-top:1px solid var(--line);font:11px/16px var(--mono)}
+.sidebar-footer>p{margin:0;color:var(--soft)}
+.build-status{display:flex;align-items:center;gap:8px;margin-top:16px;color:var(--green);font-weight:700}
+.build-indicator{position:relative;display:inline-block;flex:none;width:6px;height:6px;border-radius:50%;background:currentColor}
+.build-indicator::after{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;animation:build-status-ping 1s cubic-bezier(0,0,.2,1) infinite}
+@keyframes build-status-ping{75%,100%{transform:scale(2);opacity:0}}
+.home-footer{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);color:var(--soft);font:11px/16px var(--mono)}
+.home-footer>p{margin:0;padding:0;border:0;background:none;color:inherit;font:inherit}
+.footer-signature{font:inherit}
+.recent-empty{margin:0;padding:28px 0;border-bottom:1px solid var(--line);font:13px/1.8 var(--sans);color:var(--muted)}
+@media(min-width:640px){.home-footer{flex-direction:row;align-items:center;justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){.build-indicator::after{animation:none;opacity:0}}

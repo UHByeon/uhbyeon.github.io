@@ -4,6 +4,10 @@
   "display_name": "Ui-hyeok Byeon",
   "name_ko": "변의혁",
   "description": "배우고, 만들고, 기록합니다.",
+  "release": {
+    "version": "9.14.1991",
+    "channel": "stable"
+  },
   "navigation": [
     {
       "key": "home",

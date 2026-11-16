@@ -1,19 +1,29 @@
 """Generate the responsive, static uhbyeon's log_ website."""
 from pathlib import Path
 from html import escape
+from datetime import date
 import hashlib
 import json
 import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = json.loads((ROOT / "content/site.json").read_text(encoding="utf-8"))
-POSTS = json.loads((ROOT / "content/posts.json").read_text(encoding="utf-8"))
+def ordered_posts(records):
+    return sorted(
+        records,
+        key=lambda post: (date.fromisoformat(post["date"]), post["id"]),
+        reverse=True,
+    )
+
+
+POSTS = ordered_posts(json.loads((ROOT / "content/posts.json").read_text(encoding="utf-8")))
 NAV = SITE["navigation"]
 NAV_BY_KEY = {item["key"]: item for item in NAV}
-LOG_KEYS = ("ai", "security", "issues", "vulnerabilities")
+LOG_KEYS = ("ai", "security", "issues", "vulnerabilities", "development")
 SITE_NAME = SITE["name"]
 DISPLAY_NAME = SITE.get("display_name", SITE["author"])
 NAME_KO = SITE.get("name_ko", "")
+RELEASE_LABEL = f'v{SITE["release"]["version"]}-{SITE["release"]["channel"]}'
 FONT_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
 ICONS = {
     "terminal": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',
@@ -77,7 +87,7 @@ def nav_link(item, active, prefix, article=False):
 def sidebar_navigation(active, prefix, article=False):
     children = "".join(nav_link(NAV_BY_KEY[key], active, prefix, article) for key in LOG_KEYS)
     group = f'<div class="nav-group"><div class="nav-group-row{" is-active" if active == "all" else ""}"><button type="button" class="nav-group-toggle" id="log-group-toggle" aria-label="all_logs 분류 접기" aria-controls="log-categories" aria-expanded="true">{icon("chevron",12)}</button>{nav_link(NAV_BY_KEY["all"],active,prefix,article)}</div><div class="side-subnav" id="log-categories" data-has-active="{str(active in LOG_KEYS).lower()}">{children}</div></div>'
-    return nav_link(NAV_BY_KEY["home"],active,prefix,article) + group + "".join(nav_link(NAV_BY_KEY[key],active,prefix,article) for key in ("development","about"))
+    return nav_link(NAV_BY_KEY["home"],active,prefix,article) + group + nav_link(NAV_BY_KEY["about"],active,prefix,article)
 
 
 def page(title, path_label, content, active="home", nested=False, article=False, view="default", article_post=None):
@@ -89,7 +99,7 @@ def page(title, path_label, content, active="home", nested=False, article=False,
         reference_version = hashlib.sha256((ROOT / "reference-views.css").read_bytes()).hexdigest()[:8]
         reference_style = f'<link href="{prefix}reference-views.css?v={reference_version}" rel="stylesheet">'
     sidebar = sidebar_navigation(active, prefix, article)
-    bottom_active = "all" if active in LOG_KEYS else active
+    bottom_active = "all" if active in LOG_KEYS and active != "development" else active
     bottom = "".join(f'<a href="{prefix}{NAV_BY_KEY[key]["path"]}" class="{"is-active" if bottom_active == key else ""}"' + (' aria-current="page"' if active == key and not article else '') + f'>{icon(NAV_BY_KEY[key]["icon"], 20)}<span>{e(NAV_BY_KEY[key]["label"])}</span></a>' for key in ("home", "all", "development", "about"))
     menu_button = f'<button class="icon-button menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="전체 메뉴 열기">{icon("menu",21)}</button>'
     sidebar_button = f'<button type="button" class="icon-button sidebar-toggle" id="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="좌측 메뉴 접기" title="좌측 메뉴 접기">{icon("panel",20)}</button>'
@@ -109,11 +119,11 @@ def page(title, path_label, content, active="home", nested=False, article=False,
     elif view == "article":
         footer = f'<footer class="reference-footer article-footer"><span>{e(SITE_NAME)} / built with curiosity.</span></footer>'
     else:
-        footer = f'<footer class="page-footer"><p><span>$ echo</span> "작은 기록이 다음의 나를 만듭니다."</p><div><span>{e(SITE_NAME)} / built with curiosity.</span><span>예시 콘텐츠</span></div></footer>'
+        footer = f'<footer class="page-footer home-footer"><p><span>$ echo</span> "작은 기록이 다음의 나를 만듭니다."</p><span class="footer-signature">{e(SITE_NAME)} / built with curiosity.</span></footer>'
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="{e(title)} — {e(SITE_NAME)}"><meta name="theme-color" content="#10141a"><title>{e(SITE_NAME)} · {e(title)}</title><link rel="icon" href="{prefix}favicon.ico?v=4" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="{prefix}favicon-32.png?v=4"><link rel="icon" type="image/svg+xml" href="{prefix}favicon.svg?v=4"><link rel="apple-touch-icon" sizes="180x180" href="{prefix}apple-touch-icon.png?v=4"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="{e(FONT_URL)}" rel="stylesheet"><link href="{prefix}styles.css?v={asset_version}" rel="stylesheet">{reference_style}<script src="{prefix}script.js?v={script_version}" defer></script></head>
 <body class="view-{view}" data-active-section="{active}" data-prefix="{prefix}" data-site-name="{e(SITE_NAME)}" data-author="{e(SITE["author"])}" data-display-name="{e(DISPLAY_NAME)}" data-name-ko="{e(NAME_KO)}"><a class="skip-link" href="#main">본문으로 건너뛰기</a><header class="site-header">{header}</header>
-<button class="menu-backdrop" id="menu-backdrop" tabindex="-1" aria-label="전체 메뉴 닫기" hidden></button><aside class="sidebar" id="sidebar" aria-label="전체 탐색"><div class="sidebar-heading"><span>workspace</span><button class="icon-button drawer-close" aria-label="메뉴 닫기">{icon("close")}</button></div><p class="nav-command">$ log --menu</p><nav class="side-nav" aria-label="주 메뉴">{sidebar}</nav><div class="sidebar-footer"><p>// keep exploring.<br>// keep a log.</p></div></aside>
+<button class="menu-backdrop" id="menu-backdrop" tabindex="-1" aria-label="전체 메뉴 닫기" hidden></button><aside class="sidebar" id="sidebar" aria-label="전체 탐색"><div class="sidebar-heading"><span>workspace</span><button class="icon-button drawer-close" aria-label="메뉴 닫기">{icon("close")}</button></div><p class="nav-command">$ log --menu</p><nav class="side-nav" aria-label="주 메뉴">{sidebar}</nav><div class="sidebar-footer"><p>// keep exploring.<br>// keep a log.</p><div class="build-status"><span class="build-indicator" aria-hidden="true"></span><span>{e(RELEASE_LABEL)}</span></div></div></aside>
 <div class="workspace"><main id="main" class="page-shell">{page_path}{content}{footer}</main></div><nav class="bottom-nav" aria-label="모바일 주 메뉴">{bottom}</nav><p id="interaction-status" class="sr-only" role="status" aria-live="polite"></p></body></html>'''
 
 
@@ -125,24 +135,25 @@ def code_frame(text, label, code_id, language="text", copy=True):
 
 def rows(posts, prefix="./"):
     output = []
-    for post in posts:
-        number = POSTS.index(post) + 1
-        output.append(f'<article class="log-row"><span class="row-number">{number:02}</span><div><div class="post-meta"><a href="{category_url(post,prefix)}">{e(post["category"])}</a><span>·</span><time datetime="{post["date"]}">{post["date"].replace("-", ".")}</time><span>· {e(post["reading"])} 읽기 · 예시</span></div><h3><a href="{post_url(post,prefix)}">{e(post["title"])}</a></h3><p>{e(post["summary"])}</p></div><a class="row-arrow" href="{post_url(post,prefix)}" aria-label="{e(post["title"])} 읽기">{icon("arrow")}</a></article>')
+    for number,post in enumerate(posts,1):
+        output.append(f'<article class="log-row"><span class="row-number">{number:02}</span><div><div class="post-meta"><a href="{category_url(post,prefix)}">{e(post["category"])}</a><span>·</span><time datetime="{post["date"]}">{post["date"].replace("-", ".")}</time><span>· {e(post["reading"])} 읽기</span></div><h3><a href="{post_url(post,prefix)}">{e(post["title"])}</a></h3><p>{e(post["summary"])}</p></div><a class="row-arrow" href="{post_url(post,prefix)}" aria-label="{e(post["title"])} 읽기">{icon("arrow")}</a></article>')
     return "".join(output)
 
 
 def home():
-    first = POSTS[0] if POSTS else None
+    posts = ordered_posts(POSTS)
+    recent = posts[:4]
+    recent_html = rows(recent) if recent else '<p class="recent-empty">아직 게시된 글이 없습니다.</p>'
     hero_code = "// a little progress, every day.\nconst day = {\n  build: 'something',\n  learn: 'one thing',\n  write: 'it down'\n};\nkeepGoing(day);"
-    pinned = f'<a class="pinned-note" href="{post_url(first)}"><div class="pin-eyebrow">{icon("bookmark",15)} 처음 오셨다면 · 추천 글 {icon("arrow",15)}</div><h2>{e(first["title"])}</h2><p>{e(first["summary"])}</p><footer><span>pinned_note.md</span><span>open note →</span></footer></a>' if first else '<div class="pinned-note"><h2>첫 기록을 기다립니다.</h2></div>'
-    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>생각을 코드로,<br>경험을 <span>기록으로.</span></h1><p class="hero-description">문제를 풀고, 작은 도구를 만들고, 배운 것을 남깁니다.<br>계속 업데이트되는 개발자의 작업 노트.</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(POSTS)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"daily-log.ts","daily-code","TS",False)}<p>└ 오늘의 배움을 한 줄씩.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(POSTS):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{rows(POSTS[:4])}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>개발 노트</h2><p>배운 것과 해결한 문제를 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./papers-ai.html">{icon("brain",24)}<div><h2>인공지능 논문</h2><p>읽고 이해한 내용을 차곡차곡.</p></div>{icon("arrow",16)}</a></div>'''
+    pinned = f'<a class="pinned-note" href="./about.html"><div class="pin-eyebrow">{icon("bookmark",15)} 처음 오셨다면 · 추천 글 {icon("arrow",15)}</div><h2>안녕하세요, {e(NAME_KO)}입니다.</h2><p>인공지능과 정보보안을 공부하며 읽고, 만들고, 정리한 내용을 남깁니다.</p><footer><span>about_me.md</span><span>open profile →</span></footer></a>'
+    return f'''<section class="hero"><p class="command">$ cat about_me.md</p><h1>생각을 코드로,<br>경험을 <span>기록으로.</span></h1><p class="hero-description">문제를 풀고, 작은 도구를 만들고, 배운 것을 남깁니다.<br>계속 업데이트되는 개발자의 작업 노트.</p><div class="hero-links"><a class="terminal-button" href="./posts.html">기록 둘러보기 {icon("arrow",15)}</a><span>// {len(posts)} articles logged</span></div></section><div class="home-panels"><div class="daily-log">{code_frame(hero_code,"daily-log.ts","daily-code","TS",False)}<p>└ 오늘의 배움을 한 줄씩.</p></div>{pinned}</div><section class="recent-logs" id="recent-logs"><header class="section-heading"><div><span>~/logs</span><h2>최근 기록</h2><small>{len(posts):02}</small></div><a href="./posts.html">all_logs {icon("arrow",14)}</a></header>{recent_html}</section><div class="topic-grid"><a href="./development.html">{icon("code",24)}<div><h2>개발 노트</h2><p>배운 것과 해결한 문제를 정리합니다.</p></div>{icon("arrow",16)}</a><a href="./papers-ai.html">{icon("brain",24)}<div><h2>인공지능 논문</h2><p>읽고 이해한 내용을 차곡차곡.</p></div>{icon("arrow",16)}</a></div>'''
 
 
 FILTERS = [("all", "All"), *[(key, NAV_BY_KEY[key]["label"]) for key in LOG_KEYS]]
 
 
-def filters(posts, by_category=False, include_notes=False):
-    values = [("all","All")]+[(category,category) for category in dict.fromkeys(p["category"] for p in posts)] if by_category else FILTERS + ([("development","dev_notes")] if include_notes else [])
+def filters(posts, by_category=False):
+    values = [("all","All")]+[(category,category) for category in dict.fromkeys(p["category"] for p in posts)] if by_category else FILTERS
     parts = []
     for key,label in values:
         count = len(posts) if key == "all" else sum((p["category"] if by_category else section(p)) == key for p in posts)
@@ -176,8 +187,8 @@ def archive_card(post):
 def archive(key="all", legacy_category=None):
     item=NAV_BY_KEY[key]
     selected=[p for p in POSTS if p["category"] == legacy_category] if legacy_category else [p for p in POSTS if (section(p) in LOG_KEYS if key == "all" else section(p) == key)]
-    intro={"all":"논문과 보안 기록","ai":"읽고 이해한 인공지능 논문","security":"정보보안 논문을 읽으며","issues":"살펴본 기술과 보안 이슈","vulnerabilities":"취약점의 원인과 대응","development":"개발하면서 적은 메모"}[key]
-    desc={"all":"인공지능·정보보안 논문과 이슈, 취약점에 관한 글을 모았습니다.","ai":"논문이 다루는 문제와 접근 방법, 읽으면서 궁금했던 점을 정리합니다.","security":"위협을 분석하는 방법과 논문에서 제안한 대응을 살펴봅니다.","issues":"관심 있게 본 소식과 그 배경을 정리합니다.","vulnerabilities":"취약점이 발생하는 조건과 원인, 대응 방법을 정리합니다.","development":"구현하다 막힌 부분과 해결 과정, 다시 찾아볼 내용을 남깁니다."}[key]
+    intro={"all":"전체 기록","ai":"읽고 이해한 인공지능 논문","security":"정보보안 논문을 읽으며","issues":"살펴본 기술과 보안 이슈","vulnerabilities":"취약점의 원인과 대응","development":"개발하면서 적은 메모"}[key]
+    desc={"all":"논문을 읽고 정리한 내용부터 보안 이슈와 개발 메모까지, 모든 글을 모았습니다.","ai":"논문이 다루는 문제와 접근 방법, 읽으면서 궁금했던 점을 정리합니다.","security":"위협을 분석하는 방법과 논문에서 제안한 대응을 살펴봅니다.","issues":"관심 있게 본 소식과 그 배경을 정리합니다.","vulnerabilities":"취약점이 발생하는 조건과 원인, 대응 방법을 정리합니다.","development":"구현하다 막힌 부분과 해결 과정, 다시 찾아볼 내용을 남깁니다."}[key]
     cards="".join(archive_card(p) for p in selected)
     empty='<div class="empty-library"><p class="command">$ ls ./records</p><h2>아직 기록이 없습니다.</h2><p>첫 번째 기록을 이곳에 차곡차곡 남길 예정입니다.</p></div>' if not selected else ""
     return f'<div class="archive-topline"><span><b>~/{e(item["label"])}</b><small>⑂ [branch: main ▾]</small></span>{search_box()}</div><header class="page-intro"><p class="reference-command"><b>$</b><span>grep -r "tip" ./{e(item["label"])}</span><i class="prompt-cursor" aria-hidden="true"></i></p><h1>{e(intro)}</h1><p>{e(desc)}</p></header>{filters(selected) if key == "all" and not legacy_category else ""}<span id="post-count" class="sr-only">{len(selected)}</span><div class="archive-cards">{cards}</div>{empty}<p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p class="sr-only" id="search-status" role="status" aria-live="polite"></p>'
@@ -240,7 +251,7 @@ def timeline():
     entries = []
     for i,post in enumerate(POSTS,1):
         entries.append(f'<article class="timeline-entry" data-post data-section="{e(section(post))}" data-search="{search_data(post)}"><div class="post-meta"><span class="tag">log-{i:04}</span><time datetime="{post["date"]}">{post["date"].replace("-", ".")}</time><span>{e(post["category"])} · {e(post["reading"])} 읽기</span></div><h2><a href="{post_url(post)}">{e(post["title"])}</a></h2><p>{e(post["summary"])}</p><footer><span>* author: @{e(SITE["author"])} · 예시 기록</span><a href="{post_url(post)}">// read log {icon("arrow",13)}</a></footer></article>')
-    return f'<div class="archive-topline"><span><b>~/logs / timeline</b> <small>⑂ main</small></span>{search_box()}</div><header class="timeline-command"><p class="command">$ log --list --graph</p><p>Total: <b id="post-count">{len(POSTS)}</b> records <span>|</span> {len({p["category"] for p in POSTS})} categories</p><small>용도 미정 · 커밋 목록형 레이아웃 미리보기</small></header>{filters(POSTS,include_notes=True)}<div class="timeline-list">{"".join(entries)}</div><p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p id="search-status" class="sr-only" role="status" aria-live="polite"></p>'
+    return f'<div class="archive-topline"><span><b>~/logs / timeline</b> <small>⑂ main</small></span>{search_box()}</div><header class="timeline-command"><p class="command">$ log --list --graph</p><p>Total: <b id="post-count">{len(POSTS)}</b> records <span>|</span> {len({p["category"] for p in POSTS})} categories</p><small>용도 미정 · 커밋 목록형 레이아웃 미리보기</small></header>{filters(POSTS)}<div class="timeline-list">{"".join(entries)}</div><p class="search-empty" id="search-empty" hidden>일치하는 기록이 없습니다.</p><p id="search-status" class="sr-only" role="status" aria-live="polite"></p>'
 
 
 def write(filename, text):
